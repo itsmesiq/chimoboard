@@ -10,7 +10,7 @@ export default defineConfig({
     globals: false,
     include: ["src/**/*.test.{ts,tsx}"],
     coverage: {
-      include: ["src/features/game/domain/**/*.ts"],
+      include: ["src/features/domain/**/*.ts"],
     },
   },
 });
