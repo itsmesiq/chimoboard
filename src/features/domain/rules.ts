@@ -1,7 +1,4 @@
-export type Position = {
-  row: number;
-  col: number;
-};
+import type { Position } from "./game.types";
 
 export function areAdjacent(first: Position, second: Position): boolean {
   const rowDistance = Math.abs(first.row - second.row);
