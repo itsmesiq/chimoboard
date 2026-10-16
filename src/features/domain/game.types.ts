@@ -28,6 +28,7 @@ export type GameState = {
     puzzle: Puzzle;
     foundChimos: string[];
     selectedEmptyCells: string[];
+    markedCells: string[];
     lives: number;
     status: GameStatus;
 };
