@@ -1,3 +1,4 @@
+import { ChimoIndicator } from './features/components/ChimoIndicator';
 import { GameBoard } from './features/components/GameBoard';
 import { LivesIndicator } from './features/components/LivesIndicator';
 import { puzzles } from './features/data/puzzles';
@@ -11,6 +12,10 @@ export default function App() {
         <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background p-8 text-foreground">
             <div className="flex h-[640px] w-[416px] flex-col items-center justify-between rounded-lg bg-surface p-6">
                 <h1 className="text-2xl font-semibold">ChimoBoard</h1>
+
+                <div className="w-full">
+                    <ChimoIndicator puzzle={puzzle} foundChimos={state.foundChimos} />
+                </div>
 
                 <div className="w-full max-w-sm">
                     <GameBoard
