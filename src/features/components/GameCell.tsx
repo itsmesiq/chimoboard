@@ -1,4 +1,7 @@
 import type { MouseEvent } from 'react';
+import chimoImage from '../../assets/chimo.svg';
+import cellErrorImage from '../../assets/cell-error.svg';
+import cellMarkImage from '../../assets/cell-mark.svg';
 
 type GameCellProps = {
     cellId: string;
@@ -52,24 +55,33 @@ export function GameCell({
             onClick={handleClick}
             onContextMenu={handleContextMenu}
             className="flex aspect-square w-full items-center justify-center rounded-md border border-stroke transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-default"
-            style={{ backgroundColor: isRevealed ? '#151719' : regionColor }}
+            style={{ backgroundColor: regionColor }}
         >
             {isRevealed && isChimo && (
-                <span className="text-primary" aria-hidden="true">
-                    🐶
-                </span>
+                <img
+                    src={chimoImage}
+                    alt=""
+                    aria-hidden="true"
+                    className="h-[70%] w-[70%] object-contain drop-shadow-md drop-shadow-black/30"
+                />
             )}
 
             {isRevealed && !isChimo && (
-                <span className="text-red-400" aria-hidden="true">
-                    X
-                </span>
+                <img
+                    src={cellErrorImage}
+                    alt=""
+                    aria-hidden="true"
+                    className="h-[45%] w-[45%] object-contain drop-shadow-md drop-shadow-black/30"
+                />
             )}
 
             {!isRevealed && isMarked && (
-                <span className="text-white" aria-hidden="true">
-                    X
-                </span>
+                <img
+                    src={cellMarkImage}
+                    alt=""
+                    aria-hidden="true"
+                    className="h-[45%] w-[45%] object-contain drop-shadow-md drop-shadow-black/30"
+                />
             )}
         </button>
     );
