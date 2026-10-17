@@ -14,7 +14,7 @@ export function LivesIndicator({ lives }: LivesIndicatorProps) {
         <div
             role="img"
             aria-label={`${remainingLives} de ${TOTAL_LIVES} vidas restantes`}
-            className="flex items-center gap-2 py-2 px-3 bg-background rounded-full"
+            className="flex items-center gap-2 rounded-full bg-background px-3 py-2"
         >
             {Array.from({ length: TOTAL_LIVES }, (_, index) => {
                 const isAlive = index < remainingLives;
@@ -22,9 +22,9 @@ export function LivesIndicator({ lives }: LivesIndicatorProps) {
                 return (
                     <div key={index} aria-hidden="true">
                         {isAlive ? (
-                            <img src={lifeFull} alt="" aria-hidden="true" className="w-6 h-5" />
+                            <img src={lifeFull} alt="" aria-hidden="true" className="h-5 w-6" />
                         ) : (
-                            <img src={lifeLost} alt="" aria-hidden="true" className="w-6 h-5" />
+                            <img src={lifeLost} alt="" aria-hidden="true" className="h-5 w-6" />
                         )}
                     </div>
                 );

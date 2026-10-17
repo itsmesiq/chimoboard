@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import type { Puzzle } from '../domain/game.types';
 import { createInitialGameState, selectCell, toggleCellMark } from '../domain/game-state';
 

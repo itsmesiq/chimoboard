@@ -1,7 +1,8 @@
 import type { MouseEvent } from 'react';
-import chimoImage from '../../assets/chimo.svg';
+
 import cellErrorImage from '../../assets/cell-error.svg';
 import cellMarkImage from '../../assets/cell-mark.svg';
+import chimoImage from '../../assets/chimo.svg';
 
 type GameCellProps = {
     cellId: string;
@@ -54,7 +55,7 @@ export function GameCell({
             disabled={disabled}
             onClick={handleClick}
             onContextMenu={handleContextMenu}
-            className="flex aspect-square w-full items-center justify-center cursor-pointer rounded-md border border-stroke transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-default"
+            className="flex aspect-square w-full cursor-pointer items-center justify-center rounded-md border border-stroke transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-default"
             style={{ backgroundColor: regionColor }}
         >
             {isRevealed && isChimo && (

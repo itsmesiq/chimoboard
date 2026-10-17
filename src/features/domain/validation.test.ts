@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import type { Puzzle } from './game.types';
 import { isValidSolution } from './validation';
 

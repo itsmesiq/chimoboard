@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { puzzles } from '../data/puzzles';
 import { createInitialGameState, selectCell, toggleCellMark } from './game-state';
 

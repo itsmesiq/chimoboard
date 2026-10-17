@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { isValidSolution } from '../domain/validation';
 import { puzzles } from './puzzles';
 

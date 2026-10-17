@@ -3,9 +3,10 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+
 import { puzzles } from '../data/puzzles';
-import { createInitialGameState, selectCell, toggleCellMark } from '../domain/game-state';
 import type { GameState } from '../domain/game.types';
+import { createInitialGameState, selectCell, toggleCellMark } from '../domain/game-state';
 import { GameBoard } from './GameBoard';
 
 const puzzle = puzzles[0];

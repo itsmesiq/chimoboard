@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+
 import lifeFull from '../../assets/life-full.svg';
 import lifeLost from '../../assets/life-lost.svg';
 import { LivesIndicator } from './LivesIndicator';
