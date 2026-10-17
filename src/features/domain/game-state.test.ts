@@ -23,17 +23,17 @@ describe('createInitialGameState', () => {
 describe('selecteCell', () => {
     it('reveals a Chimo whithout losing a life', () => {
         const state = createInitialGameState(puzzle);
-        const nextState = selectCell(state, '0-1');
+        const nextState = selectCell(state, '0-0');
 
-        expect(nextState.foundChimos).toContain('0-1');
+        expect(nextState.foundChimos).toContain('0-0');
         expect(nextState.lives).toBe(3);
         expect(nextState.status).toBe('playing');
     });
 
     it('does not count a revealed Chimo twice', () => {
         const state = createInitialGameState(puzzle);
-        const firstSelection = selectCell(state, '0-1');
-        const secondSelection = selectCell(firstSelection, '0-1');
+        const firstSelection = selectCell(state, '0-0');
+        const secondSelection = selectCell(firstSelection, '0-0');
 
         expect(secondSelection).toBe(firstSelection);
         expect(secondSelection.foundChimos).toHaveLength(1);
@@ -41,17 +41,17 @@ describe('selecteCell', () => {
 
     it('reveals an empty cell and loses a life', () => {
         const state = createInitialGameState(puzzle);
-        const nextState = selectCell(state, '0-0');
+        const nextState = selectCell(state, '0-1');
 
-        expect(nextState.selectedEmptyCells).toContain('0-0');
+        expect(nextState.selectedEmptyCells).toContain('0-1');
         expect(nextState.lives).toBe(2);
         expect(nextState.status).toBe('playing');
     });
 
     it('does not lose another life when selection a revealed cell', () => {
         const state = createInitialGameState(puzzle);
-        const firstSelection = selectCell(state, '0-0');
-        const secontSelection = selectCell(firstSelection, '0-0');
+        const firstSelection = selectCell(state, '0-1');
+        const secontSelection = selectCell(firstSelection, '0-1');
 
         expect(secontSelection).toBe(firstSelection);
         expect(secontSelection.lives).toBe(2);
@@ -59,18 +59,18 @@ describe('selecteCell', () => {
 
     it('removes a white mark when revealing a cell', () => {
         const state = createInitialGameState(puzzle);
-        const markedState = toggleCellMark(state, '0-1');
-        const revealedState = selectCell(markedState, '0-1');
+        const markedState = toggleCellMark(state, '0-0');
+        const revealedState = selectCell(markedState, '0-0');
 
-        expect(revealedState.foundChimos).toContain('0-1');
-        expect(revealedState.markedCells).not.toContain('0-1');
+        expect(revealedState.foundChimos).toContain('0-0');
+        expect(revealedState.markedCells).not.toContain('0-0');
     });
 
     it('loses after three mistakes', () => {
         let state = createInitialGameState(puzzle);
 
-        state = selectCell(state, '0-0');
-        state = selectCell(state, '1-0');
+        state = selectCell(state, '0-1');
+        state = selectCell(state, '1-1');
         state = selectCell(state, '2-2');
 
         expect(state.lives).toBe(0);
@@ -102,11 +102,11 @@ describe('selecteCell', () => {
     it('does not allow selections after the game ends', () => {
         let state = createInitialGameState(puzzle);
 
-        state = selectCell(state, '0-0');
-        state = selectCell(state, '1-0');
+        state = selectCell(state, '0-1');
+        state = selectCell(state, '1-1');
         state = selectCell(state, '2-2');
 
-        const nextState = selectCell(state, '0-1');
+        const nextState = selectCell(state, '3-1');
 
         expect(nextState).toBe(state);
         expect(nextState.foundChimos).toEqual([]);
@@ -151,8 +151,8 @@ describe('toggleCellMark', () => {
     it('does not change state after the game ends', () => {
         let state = createInitialGameState(puzzle);
 
-        state = selectCell(state, '0-0');
-        state = selectCell(state, '1-0');
+        state = selectCell(state, '0-1');
+        state = selectCell(state, '1-1');
         state = selectCell(state, '2-2');
 
         const nextState = toggleCellMark(state, '0-1');
