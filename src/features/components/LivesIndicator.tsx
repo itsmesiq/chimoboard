@@ -14,7 +14,7 @@ export function LivesIndicator({ lives }: LivesIndicatorProps) {
         <div
             role="img"
             aria-label={`${remainingLives} de ${TOTAL_LIVES} vidas restantes`}
-            className="flex items-center gap-2 rounded-full bg-background px-3 py-2"
+            className="flex w-max items-center justify-center gap-2 rounded-full bg-background px-3 py-2"
         >
             {Array.from({ length: TOTAL_LIVES }, (_, index) => {
                 const isAlive = index < remainingLives;

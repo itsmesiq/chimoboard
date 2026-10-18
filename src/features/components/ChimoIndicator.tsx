@@ -37,7 +37,7 @@ export function ChimoIndicator({ puzzle, foundChimos }: ChimoIndicatorProps) {
                                     src={chimoImage}
                                     alt=""
                                     aria-hidden="true"
-                                    className="h-auto w-full max-w-12 object-contain"
+                                    className="h-auto w-full max-w-7 object-contain sm:max-w-12"
                                 />
                                 <span
                                     data-testid="chimo-color-dot"
@@ -50,7 +50,7 @@ export function ChimoIndicator({ puzzle, foundChimos }: ChimoIndicatorProps) {
                             <span
                                 data-testid="chimo-silhouette"
                                 aria-hidden="true"
-                                className="block aspect-[510/465] w-full max-w-12"
+                                className="block aspect-[510/465] w-full max-w-7 sm:max-w-12"
                                 style={{
                                     backgroundColor: region.color,
                                     maskImage: `url(${chimoImage})`,
