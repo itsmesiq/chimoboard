@@ -3,6 +3,7 @@ import { RotateCcw } from 'lucide-react';
 import { ChimoIndicator } from './features/components/ChimoIndicator';
 import { GameBoard } from './features/components/GameBoard';
 import { GameInstructions } from './features/components/GameInstructions';
+import { GameResult } from './features/components/GameResult';
 import { LivesIndicator } from './features/components/LivesIndicator';
 import { puzzles } from './features/data/puzzles';
 import { useGame } from './features/hooks/useGame';
@@ -22,7 +23,7 @@ export default function App() {
 
     return (
         <main
-            className={`min-h-screen bg-background text-foreground ${isEmbed ? 'p-2' : 'grid grid-cols-1 gap-8 px-5 py-6 sm:px-10 lg:h-dvh lg:min-h-0 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:overflow-hidden lg:px-10 lg:py-8'}`}
+            className={`relative min-h-screen bg-background text-foreground ${isEmbed ? 'p-2' : 'grid grid-cols-1 gap-8 px-5 py-6 sm:px-10 lg:h-dvh lg:min-h-0 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:overflow-hidden lg:px-10 lg:py-8'}`}
         >
             {!isEmbed && (
                 <header className="flex justify-center lg:col-start-1 lg:row-start-1">
@@ -59,35 +60,29 @@ export default function App() {
                     />
                 </div>
 
-                {!isEmbed &&
-                    (gameMessage ? (
-                        <div className="flex flex-col items-center gap-2">
-                            <p>{gameMessage}</p>
-                            <button
-                                type="button"
-                                onClick={resetGame}
-                                className="w-fit cursor-pointer rounded-lg bg-primary px-4 py-2 font-medium text-background transition-opacity hover:opacity-90"
-                            >
-                                Jogar Novamente
-                            </button>
-                        </div>
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={resetGame}
-                            disabled={state.status !== 'playing'}
-                            className="flex max-h-9 cursor-pointer items-center gap-2 rounded-full border border-foreground bg-transparent px-4 py-2 text-sm text-foreground transition-colors duration-500 ease-in-out hover:border-primary hover:bg-primary hover:text-foreground"
-                        >
-                            <RotateCcw className="size-4" />
-                            <span>Reset</span>
-                        </button>
-                    ))}
+                {!isEmbed && (
+                    <button
+                        type="button"
+                        onClick={resetGame}
+                        disabled={state.status !== 'playing'}
+                        className="flex max-h-9 cursor-pointer items-center gap-2 rounded-full border border-foreground bg-transparent px-4 py-2 text-sm text-foreground transition-colors duration-500 ease-in-out hover:border-primary hover:bg-primary hover:text-foreground"
+                    >
+                        <RotateCcw className="size-4" />
+                        <span>Reset</span>
+                    </button>
+                )}
             </section>
 
             {!isEmbed && (
                 <aside className="flex flex-col gap-8 lg:col-start-1 lg:row-start-2 lg:min-h-0 lg:justify-start">
                     <GameInstructions />
                 </aside>
+            )}
+
+            {gameMessage && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center overflow-auto bg-background/80 backdrop-blur-sm">
+                    <GameResult status={state.status as 'won' | 'lost'} onReplay={resetGame} />
+                </div>
             )}
         </main>
     );
