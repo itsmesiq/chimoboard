@@ -19,16 +19,50 @@ export default function App() {
               : null;
 
     return (
-        <main className="min-h-screen bg-background px-1.5 py-1.5 text-foreground sm:px-8 sm:py-8">
-            <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8 rounded-2xl border border-stroke bg-surface p-3 sm:gap-6 sm:p-6 lg:p-8">
-                <header className="flex w-full items-center justify-between">
-                    <LivesIndicator lives={state.lives} />
-                    <img
-                        src="/public/logo-vertical.svg"
-                        alt="Logo ChimoBoard"
-                        aria-hidden="true"
-                        className="h-full max-h-[108px] w-auto"
+        <main className="grid min-h-screen grid-cols-1 gap-8 bg-background px-5 py-6 text-foreground sm:px-10 lg:h-dvh lg:min-h-0 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:overflow-hidden lg:px-10 lg:py-8">
+            <header className="flex justify-center lg:col-start-1 lg:row-start-1">
+                <img
+                    src="/logo-vertical.svg"
+                    alt="Logo ChimoBoard"
+                    aria-hidden="true"
+                    className="mx-auto hidden h-full max-h-[180px] w-auto sm:block"
+                />
+                <img
+                    src="/logo-horizontal.svg"
+                    alt="Logo ChimoBoard"
+                    aria-hidden="true"
+                    className="mx-auto h-auto w-[80%] sm:hidden"
+                />
+            </header>
+
+            <section
+                aria-label="Partida"
+                className="flex w-full flex-col items-center gap-6 rounded-2xl border border-stroke bg-surface px-2 py-4 sm:px-6 sm:py-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:justify-center"
+            >
+                <LivesIndicator lives={state.lives} />
+
+                <div className="flex w-full min-w-0 flex-col gap-3 lg:mx-auto lg:max-h-full lg:max-w-[min(100%,calc((100dvh-240px)*0.9))]">
+                    <ChimoIndicator puzzle={puzzle} foundChimos={state.foundChimos} />
+                    <GameBoard
+                        puzzle={puzzle}
+                        gameState={state}
+                        onReveal={revealCell}
+                        onToggleMark={toggleMark}
                     />
+                </div>
+
+                {gameMessage ? (
+                    <div>
+                        <p>{gameMessage}</p>
+                        <button
+                            type="button"
+                            onClick={resetGame}
+                            className="cursor-pointer rounded-lg bg-primary px-4 py-2 font-medium text-background transition-opacity hover:opacity-90"
+                        >
+                            Jogar Novamente
+                        </button>
+                    </div>
+                ) : (
                     <button
                         type="button"
                         onClick={resetGame}
@@ -38,43 +72,12 @@ export default function App() {
                         <RotateCcw className="size-4" />
                         <span>Reset</span>
                     </button>
-                </header>
-
-                <section
-                    aria-label="Partida"
-                    className="flex w-full flex-col items-center gap-5 sm:gap-8"
-                >
-                    <div className="flex w-full max-w-[560px] flex-col gap-3">
-                        <ChimoIndicator puzzle={puzzle} foundChimos={state.foundChimos} />
-
-                        <GameBoard
-                            puzzle={puzzle}
-                            gameState={state}
-                            onReveal={revealCell}
-                            onToggleMark={toggleMark}
-                        />
-                    </div>
-                </section>
-
-                {gameMessage && (
-                    <div
-                        role="status"
-                        className="flex w-full flex-col items-center gap-3 rounded-xl border border-stroke p-4 text-center"
-                    >
-                        <p className="font-medium">{gameMessage}</p>
-
-                        <button
-                            type="button"
-                            onClick={resetGame}
-                            className="cursor-pointer rounded-lg bg-primary px-4 py-2 font-medium text-background transition-opacity hover:opacity-90"
-                        >
-                            Jogar Novamente
-                        </button>
-                    </div>
                 )}
+            </section>
 
+            <aside className="flex flex-col gap-8 lg:col-start-1 lg:row-start-2 lg:min-h-0 lg:justify-start">
                 <GameInstructions />
-            </div>
+            </aside>
         </main>
     );
 }

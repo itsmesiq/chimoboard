@@ -24,7 +24,7 @@ function RuleExample({ type }: { type: (typeof instructions)[number]['type'] }) 
     return (
         <div
             aria-hidden="true"
-            className="grid size-[44px] shrink-0 grid-cols-3 grid-rows-3 gap-0.5 sm:size-[76px]"
+            className="grid size-[56px] shrink-0 grid-cols-3 grid-rows-3 gap-0.5 sm:size-[76px]"
         >
             {Array.from({ length: 9 }, (_, index) => {
                 const isChimo =
@@ -69,34 +69,32 @@ export function GameInstructions() {
         <section aria-labelledby="game-instructions-title" className="w-full">
             <h2
                 id="game-instructions-title"
-                className="mb-3 hidden text-sm font-semibold tracking-wide text-foreground sm:block"
+                className="mb-3 text-center text-base font-semibold tracking-wide text-foreground sm:text-lg"
             >
                 Como Jogar
             </h2>
-            <div className="flex gap-2 sm:grid sm:grid-cols-3 sm:gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1">
                 {instructions.map((instruction) => (
                     <article
                         key={instruction.type}
-                        className="flex items-center gap-2 rounded-md border border-stroke p-1.5 sm:flex-col sm:items-start sm:gap-3 sm:p-4 lg:flex-row lg:items-center"
+                        className="flex items-center gap-6 rounded-md border border-stroke p-2 sm:flex-col sm:items-start sm:gap-5 sm:p-4 lg:flex-row lg:items-center"
                     >
-                        <div className="w-[44px] shrink-0 sm:w-full sm:max-w-[112px] lg:w-[76]">
+                        <div className="w-[56px] shrink-0 sm:w-full sm:max-w-[112px] lg:w-[76]">
                             <RuleExample type={instruction.type} />
                         </div>
 
                         <div className="min-w-0">
-                            <h3
-                                className={`text-[10px] text-foreground sm:text-sm ${instruction.type === 'region' ? 'w-10 sm:w-full' : ''}`}
-                            >
+                            <h3 className="text-sm font-semibold text-foreground">
                                 {instruction.title}
                             </h3>
-                            <p className="mt-1 hidden text-xs leading-relaxed text-muted sm:block">
+                            <p className="mt-0.5 text-xs text-muted sm:mt-1.5">
                                 {instruction.description}
                             </p>
                         </div>
                     </article>
                 ))}
             </div>
-            <p className="mt-3 hidden text-xs leading-relaxed text-muted sm:block">
+            <p className="mt-3 hidden text-xs leading-relaxed text-muted sm:block lg:px-2">
                 Clique em uma célula para revelar seu conteúdo. Encontrar um Chimo não consome
                 vidas; revelar uma célula vazia custa uma vida. Use o botão direito para marcar uma
                 célula sem revelá-la. Você tem três vidas por partida.
