@@ -43,7 +43,7 @@ export default function App() {
 
             <section
                 aria-label="Partida"
-                className={`flex w-full flex-col items-center rounded-2xl border border-stroke bg-surface px-2 py-4 ${isEmbed ? 'gap-4' : 'gap-6 sm:px-6 sm:py-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:justify-center'}`}
+                className={`flex w-full flex-col items-center rounded-2xl border border-stroke bg-surface px-2 py-4 ${isEmbed ? 'gap-4 overflow-hidden' : 'gap-6 sm:px-6 sm:py-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:justify-center'}`}
             >
                 <LivesIndicator lives={state.lives} />
 
@@ -61,12 +61,12 @@ export default function App() {
 
                 {!isEmbed &&
                     (gameMessage ? (
-                        <div>
+                        <div className="flex flex-col items-center gap-2">
                             <p>{gameMessage}</p>
                             <button
                                 type="button"
                                 onClick={resetGame}
-                                className="cursor-pointer rounded-lg bg-primary px-4 py-2 font-medium text-background transition-opacity hover:opacity-90"
+                                className="w-fit cursor-pointer rounded-lg bg-primary px-4 py-2 font-medium text-background transition-opacity hover:opacity-90"
                             >
                                 Jogar Novamente
                             </button>
