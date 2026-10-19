@@ -5,12 +5,12 @@ import { GameBoard } from './features/components/GameBoard';
 import { GameInstructions } from './features/components/GameInstructions';
 import { GameResult } from './features/components/GameResult';
 import { LivesIndicator } from './features/components/LivesIndicator';
-import { puzzles } from './features/data/puzzles';
+import { generatePuzzle } from './features/domain/puzzle-generator';
 import { useGame } from './features/hooks/useGame';
 
 export default function App() {
-    const puzzle = puzzles[0];
-    const { state, revealCell, toggleMark, resetGame } = useGame(puzzle);
+    const { puzzle, state, revealCell, toggleMark, resetGame, replayGame } =
+        useGame(generatePuzzle);
 
     const isEmbed = new URLSearchParams(window.location.search).get('mode') === 'embed';
 
@@ -81,7 +81,11 @@ export default function App() {
 
             {gameMessage && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center overflow-auto bg-background/80 backdrop-blur-sm">
-                    <GameResult status={state.status as 'won' | 'lost'} onReplay={resetGame} />
+                    <GameResult
+                        status={state.status as 'won' | 'lost'}
+                        onReset={resetGame}
+                        onReplay={replayGame}
+                    />
                 </div>
             )}
         </main>
