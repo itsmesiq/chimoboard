@@ -37,9 +37,11 @@ describe('GameBoard', () => {
     it('renders the board with the correct dimensions', () => {
         renderBoard();
 
-        const grid = screen.getByRole('grid', { name: `Tabuleiro ${puzzle.size}x${puzzle.size}` });
+        const board = screen.getByRole('group', {
+            name: `Tabuleiro ${puzzle.size}x${puzzle.size}`,
+        });
 
-        expect(within(grid).getAllByRole('gridcell')).toHaveLength(puzzle.size * puzzle.size);
+        expect(within(board).getAllByRole('button')).toHaveLength(puzzle.size * puzzle.size);
     });
 
     it('renders every cell with its accessible label', () => {
