@@ -1,4 +1,5 @@
 import type { Position, Puzzle, Region } from './game.types';
+import { findSolutions } from './puzzle-solver';
 import { isValidSolution } from './validation';
 
 const REGION_COLORS = [
@@ -20,6 +21,16 @@ type FrontierCell = {
     regionIndex: number;
 };
 
+type BoundaryMove = {
+    cellIndex: number;
+    sourceRegion: number;
+    targetRegion: number;
+};
+
+const MAX_SOLUTION_ATTEMPTS = 40;
+const MAX_REGION_ATTEMPTS = 20;
+const MAX_GUIDED_MUTATIONS = 100;
+
 let puzzleSequence = 0;
 
 function shuffle<T>(items: T[], random: Random): T[] {
@@ -33,12 +44,15 @@ function shuffle<T>(items: T[], random: Random): T[] {
     return result;
 }
 
-function areAdjacent(first: Position, second: Position): boolean {
-    return (
-        Math.abs(first.row - second.row) <= 1 &&
-        Math.abs(first.col - second.col) <= 1 &&
-        (first.row !== second.row || first.col !== second.col)
-    );
+function getCellIndex(position: Position, size: number): number {
+    return position.row * size + position.col;
+}
+
+function getPosition(index: number, size: number): Position {
+    return {
+        row: Math.floor(index / size),
+        col: index % size,
+    };
 }
 
 function getNeighbors(position: Position, size: number): Position[] {
@@ -52,6 +66,14 @@ function getNeighbors(position: Position, size: number): Position[] {
     ].filter(
         (neighbor) =>
             neighbor.row >= 0 && neighbor.row < size && neighbor.col >= 0 && neighbor.col < size,
+    );
+}
+
+function areAdjacent(first: Position, second: Position): boolean {
+    return (
+        Math.abs(first.row - second.row) <= 1 &&
+        Math.abs(first.col - second.col) <= 1 &&
+        (first.row !== second.row || first.col !== second.col)
     );
 }
 
@@ -107,11 +129,9 @@ function generateRegions(size: number, solution: Position[], random: Random): nu
     const regionByCell = Array<number>(size * size).fill(-1);
     const frontier: FrontierCell[] = [];
 
-    const getCellIndex = ({ row, col }: Position) => row * size + col;
-
-    function addFrontier(position: Position, regionIndex: number) {
+    function addFrontier(position: Position, regionIndex: number): void {
         for (const neighbor of getNeighbors(position, size)) {
-            const cellIndex = getCellIndex(neighbor);
+            const cellIndex = getCellIndex(neighbor, size);
 
             if (regionByCell[cellIndex] === -1) {
                 frontier.push({ cellIndex, regionIndex });
@@ -120,7 +140,7 @@ function generateRegions(size: number, solution: Position[], random: Random): nu
     }
 
     solution.forEach((position, regionIndex) => {
-        regionByCell[getCellIndex(position)] = regionIndex;
+        regionByCell[getCellIndex(position, size)] = regionIndex;
     });
 
     solution.forEach((position, regionIndex) => {
@@ -144,15 +164,258 @@ function generateRegions(size: number, solution: Position[], random: Random): nu
         regionByCell[candidate.cellIndex] = candidate.regionIndex;
         remaining--;
 
-        const position = {
-            row: Math.floor(candidate.cellIndex / size),
-            col: candidate.cellIndex % size,
-        };
-
-        addFrontier(position, candidate.regionIndex);
+        addFrontier(getPosition(candidate.cellIndex, size), candidate.regionIndex);
     }
 
     return regionByCell;
+}
+
+function isRegionConnected(regionByCell: number[], regionIndex: number, size: number): boolean {
+    const cells: number[] = [];
+
+    for (let index = 0; index < regionByCell.length; index++) {
+        if (regionByCell[index] === regionIndex) {
+            cells.push(index);
+        }
+    }
+
+    if (cells.length === 0) {
+        return false;
+    }
+
+    const visited = new Set<number>();
+    const queue = [cells[0]];
+
+    while (queue.length > 0) {
+        const current = queue.shift();
+
+        if (current === undefined || visited.has(current)) {
+            continue;
+        }
+
+        visited.add(current);
+
+        for (const neighbor of getNeighbors(getPosition(current, size), size)) {
+            const neighborIndex = getCellIndex(neighbor, size);
+
+            if (regionByCell[neighborIndex] === regionIndex && !visited.has(neighborIndex)) {
+                queue.push(neighborIndex);
+            }
+        }
+    }
+
+    return visited.size === cells.length;
+}
+
+function areAllRegionsConnected(regionByCell: number[], size: number): boolean {
+    for (let regionIndex = 0; regionIndex < size; regionIndex++) {
+        if (!isRegionConnected(regionByCell, regionIndex, size)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function buildPuzzle(size: number, solution: Position[], regionByCell: number[]): Puzzle {
+    const regions: Region[] = Array.from({ length: size }, (_, index) => ({
+        id: `region-${index}`,
+        color: REGION_COLORS[index],
+    }));
+
+    const cells = Array.from({ length: size * size }, (_, index) => {
+        const regionIndex = regionByCell[index];
+
+        if (regionIndex === undefined || regionIndex < 0) {
+            throw new Error('O gerador produziu uma célula sem região.');
+        }
+
+        return {
+            id: `${Math.floor(index / size)}-${index % size}`,
+            position: getPosition(index, size),
+            regionId: `region-${regionIndex}`,
+        };
+    });
+
+    return {
+        id: `generated-${++puzzleSequence}`,
+        size,
+        cells,
+        regions,
+        solution: solution.map((position) => ({ ...position })),
+    };
+}
+
+function getSolutionCellIndexes(solution: Position[], size: number): Set<number> {
+    return new Set(solution.map((position) => getCellIndex(position, size)));
+}
+
+function getGuidedBondaryMoves(
+    size: number,
+    intendedSolution: Position[],
+    alternativeSolution: Position[],
+    regionByCell: number[],
+    random: Random,
+): BoundaryMove[] {
+    const intendedCells = getSolutionCellIndexes(intendedSolution, size);
+    const alternativeCells = getSolutionCellIndexes(alternativeSolution, size);
+    const moves: BoundaryMove[] = [];
+
+    for (const cellIndex of alternativeCells) {
+        if (intendedCells.has(cellIndex)) {
+            continue;
+        }
+
+        const sourceRegion = regionByCell[cellIndex];
+
+        if (sourceRegion === undefined || sourceRegion < 0) {
+            continue;
+        }
+
+        const position = getPosition(cellIndex, size);
+        const neighboringRegions = new Set<number>();
+
+        for (const neighbor of getNeighbors(position, size)) {
+            const neighborIndex = getCellIndex(neighbor, size);
+            const targetRegion = regionByCell[neighborIndex];
+
+            if (targetRegion !== undefined && targetRegion !== sourceRegion) {
+                neighboringRegions.add(targetRegion);
+            }
+        }
+
+        for (const targetRegion of neighboringRegions) {
+            moves.push({
+                cellIndex,
+                sourceRegion,
+                targetRegion,
+            });
+        }
+    }
+
+    return shuffle(moves, random);
+}
+
+function tryEliminateAlternative(
+    size: number,
+    intendedSolution: Position[],
+    alternativeSolution: Position[],
+    regionByCell: number[],
+    random: Random,
+): boolean {
+    const moves = getGuidedBondaryMoves(
+        size,
+        intendedSolution,
+        alternativeSolution,
+        regionByCell,
+        random,
+    );
+
+    for (const move of moves) {
+        regionByCell[move.cellIndex] = move.targetRegion;
+
+        const regionsConnected = areAllRegionsConnected(regionByCell, size);
+
+        if (!regionsConnected) {
+            regionByCell[move.cellIndex] = move.sourceRegion;
+            continue;
+        }
+
+        const puzzle = buildPuzzle(size, intendedSolution, regionByCell);
+
+        if (!isValidSolution(puzzle)) {
+            regionByCell[move.cellIndex] = move.sourceRegion;
+            continue;
+        }
+
+        const alternativeStillValid = findSolutions(puzzle, 2).some(
+            (solution) =>
+                solution.length === alternativeSolution.length &&
+                solution.every(
+                    (position, index) =>
+                        position.row === alternativeSolution[index]?.row &&
+                        position.col === alternativeSolution[index]?.col,
+                ),
+        );
+
+        if (!alternativeStillValid) {
+            return true;
+        }
+
+        regionByCell[move.cellIndex] = move.sourceRegion;
+    }
+
+    return false;
+}
+
+function getLayoutSignature(regionByCell: number[]): string {
+    return regionByCell.join(',');
+}
+
+function generateUniqueRegions(
+    size: number,
+    intendedSolution: Position[],
+    random: Random,
+): number[] | null {
+    for (let regionAttempt = 0; regionAttempt < MAX_REGION_ATTEMPTS; regionAttempt++) {
+        const regionByCell = generateRegions(size, intendedSolution, random);
+
+        if (!areAllRegionsConnected(regionByCell, size)) {
+            continue;
+        }
+
+        const visitedLayouts = new Set<string>();
+        visitedLayouts.add(getLayoutSignature(regionByCell));
+
+        for (let mutation = 0; mutation < MAX_GUIDED_MUTATIONS; mutation++) {
+            const puzzle = buildPuzzle(size, intendedSolution, regionByCell);
+
+            if (!isValidSolution(puzzle)) {
+                break;
+            }
+
+            const solutions = findSolutions(puzzle, 2);
+
+            if (solutions.length === 1) {
+                return [...regionByCell];
+            }
+
+            if (solutions.length === 0) {
+                break;
+            }
+
+            const alternativeSolution = solutions[1];
+
+            if (!alternativeSolution) {
+                break;
+            }
+
+            const previousLayout = [...regionByCell];
+
+            const changed = tryEliminateAlternative(
+                size,
+                intendedSolution,
+                alternativeSolution,
+                regionByCell,
+                random,
+            );
+
+            if (!changed) {
+                break;
+            }
+
+            const signature = getLayoutSignature(regionByCell);
+
+            if (visitedLayouts.has(signature)) {
+                regionByCell.splice(0, regionByCell.length, ...previousLayout);
+                break;
+            }
+
+            visitedLayouts.add(signature);
+        }
+    }
+
+    return null;
 }
 
 export function generatePuzzle(size = 9, random: Random = Math.random): Puzzle {
@@ -162,41 +425,23 @@ export function generatePuzzle(size = 9, random: Random = Math.random): Puzzle {
         );
     }
 
-    const solution = generateSolution(size, random);
-    const regionByCell = generateRegions(size, solution, random);
+    for (let attempt = 0; attempt < MAX_SOLUTION_ATTEMPTS; attempt++) {
+        const solution = generateSolution(size, random);
 
-    const regions: Region[] = Array.from({ length: size }, (_, index) => ({
-        id: `region-${index}`,
-        color: REGION_COLORS[index],
-    }));
+        const regionByCell = generateUniqueRegions(size, solution, random);
 
-    const cells = Array.from({ length: size * size }, (_, index) => {
-        const row = Math.floor(index / size);
-        const col = index % size;
-        const regionIndex = regionByCell[index];
-
-        if (regionIndex === undefined || regionIndex < 0) {
-            throw new Error('O gerador produziu uma célula sem região.');
+        if (!regionByCell) {
+            continue;
         }
 
-        return {
-            id: `${row}-${col}`,
-            position: { row, col },
-            regionId: `region-${regionIndex}`,
-        };
-    });
+        const puzzle = buildPuzzle(size, solution, regionByCell);
 
-    const puzzle: Puzzle = {
-        id: `generated-${++puzzleSequence}`,
-        size,
-        cells,
-        regions,
-        solution,
-    };
-
-    if (!isValidSolution(puzzle)) {
-        throw new Error('O gerador produziu um puzzle inválido.');
+        if (isValidSolution(puzzle) && findSolutions(puzzle, 2).length === 1) {
+            return puzzle;
+        }
     }
 
-    return puzzle;
+    throw new Error(
+        `Não foi possivel gerar um puzzle com solução única após ${MAX_SOLUTION_ATTEMPTS} soluções iniciais, ${MAX_REGION_ATTEMPTS} distribuições de regiões e ${MAX_GUIDED_MUTATIONS} mutações guiadas por distribuição.`,
+    );
 }
