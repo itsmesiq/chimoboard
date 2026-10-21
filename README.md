@@ -1,73 +1,42 @@
-# React + TypeScript + Vite
+# ChimoBoard 🐶
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ChimoBoard is a logic puzzle game that combines elements of Sudoku and Minesweeper. Find every hidden Chimo by following the rules of rows, columns, and colored regions — without running out of lives.
 
-Currently, two official plugins are available:
+![ChimoBoard gameplay preview](./docs/chimoboard-preview.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How to Play
 
-## React Compiler
+- Each row must contain exactly one Chimo.
+- Each column must contain exactly one Chimo.
+- Each colored region must contain exactly one Chimo.
+- Chimos cannot occupy adjacent cells, including diagonals.
+- **Left-click** a cell to reveal it.
+- Finding a Chimo reveals its face. Revealing an empty cell costs one life.
+- **Right-click** to mark or unmark a cell with a white X. Marks do not reveal cells or consume lives.
+- You start with **3 lives**. Find every Chimo to win; lose all your lives and the game ends.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Revealed cells remain visible. After winning or losing, you can restart the game or play again with a new puzzle.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-%23252529.svg?style=for-the-badge&logo=vitest&logoColor=FCC72B)
 
-```js
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
+## Technical Highlights
 
-            // Remove tseslint.configs.recommended and replace with this
-            tseslint.configs.recommendedTypeChecked,
-            // Alternatively, use this for stricter rules
-            tseslint.configs.strictTypeChecked,
-            // Optionally, add this for stylistic rules
-            tseslint.configs.stylisticTypeChecked,
+- Procedural puzzle generation with connected regions.
+- Backtracking solver to validate puzzle uniqueness.
+- Domain logic separated from UI components.
+- Automated tests with Vitest and React Testing Library.
 
-            // Other configs...
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
-```
+## Run Locally
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-            // Enable lint rules for React
-            reactX.configs['recommended-typescript'],
-            // Enable lint rules for React DOM
-            reactDom.configs.recommended,
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
+```bash
+git clone https://github.com/itsmesiq/chimoboard.git
+cd chimoboard
+pnpm install
+pnpm dev
 ```
