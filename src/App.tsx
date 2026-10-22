@@ -44,7 +44,7 @@ export default function App() {
 
             <section
                 aria-label="Partida"
-                className={`flex w-full flex-col items-center rounded-2xl border px-2 py-4 ${isEmbed ? 'gap-4 overflow-hidden border-transparent bg-transparent' : 'gap-6 border-stroke bg-surface sm:px-6 sm:py-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:justify-center'}`}
+                className={`flex w-full flex-col items-center rounded-2xl border ${isEmbed ? 'gap-4 overflow-hidden border-transparent bg-transparent' : 'gap-6 border-stroke bg-surface px-2 py-4 sm:px-6 sm:py-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:justify-center'}`}
             >
                 <LivesIndicator lives={state.lives} />
 
