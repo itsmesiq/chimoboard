@@ -23,7 +23,7 @@ export default function App() {
 
     return (
         <main
-            className={`relative min-h-screen bg-background text-foreground ${isEmbed ? 'p-2' : 'grid grid-cols-1 gap-8 px-5 py-6 sm:px-10 lg:h-dvh lg:min-h-0 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:overflow-hidden lg:px-10 lg:py-8'}`}
+            className={`relative min-h-screen text-foreground ${isEmbed ? 'bg-[#151515]' : 'grid grid-cols-1 gap-8 bg-background px-5 py-6 sm:px-10 lg:h-dvh lg:min-h-0 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:overflow-hidden lg:px-10 lg:py-8'}`}
         >
             {!isEmbed && (
                 <header className="flex justify-center lg:col-start-1 lg:row-start-1">
@@ -44,7 +44,7 @@ export default function App() {
 
             <section
                 aria-label="Partida"
-                className={`flex w-full flex-col items-center rounded-2xl border border-stroke bg-surface px-2 py-4 ${isEmbed ? 'gap-4 overflow-hidden' : 'gap-6 sm:px-6 sm:py-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:justify-center'}`}
+                className={`flex w-full flex-col items-center rounded-2xl border bg-surface px-2 py-4 ${isEmbed ? 'gap-4 overflow-hidden border-transparent' : 'gap-6 border-stroke sm:px-6 sm:py-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:justify-center'}`}
             >
                 <LivesIndicator lives={state.lives} />
 
