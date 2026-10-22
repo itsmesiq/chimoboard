@@ -13,7 +13,7 @@ export function GameBoard({ puzzle, gameState, onReveal, onToggleMark }: GameBoa
 
     return (
         <div
-            role="grid"
+            role="group"
             aria-label={`Tabuleiro ${puzzle.size}x${puzzle.size}`}
             className="grid gap-1"
             style={{ gridTemplateColumns: `repeat(${puzzle.size}, minmax(0, 1fr))` }}
@@ -29,12 +29,7 @@ export function GameBoard({ puzzle, gameState, onReveal, onToggleMark }: GameBoa
                 const isMarked = gameState.markedCells.includes(cell.id);
 
                 return (
-                    <div
-                        key={cell.id}
-                        role="gridcell"
-                        aria-rowindex={cell.position.row + 1}
-                        aria-colindex={cell.position.col + 1}
-                    >
+                    <div key={cell.id}>
                         <GameCell
                             cellId={cell.id}
                             regionColor={region?.color ?? '#151719'}
