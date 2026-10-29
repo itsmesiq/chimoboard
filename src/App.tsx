@@ -22,7 +22,7 @@ export default function App() {
             window.parent.postMessage(
                 {
                     type: 'chimoboard:resize',
-                    height: content.scrollHeight,
+                    height: document.querySelector('main')?.scrollHeight ?? content.scrollHeight,
                 },
                 targetOrigin,
             );
@@ -48,7 +48,7 @@ export default function App() {
 
     return (
         <main
-            className={`relative min-h-screen text-foreground ${isEmbed ? 'bg-[#151515]' : 'grid grid-cols-1 gap-8 bg-background px-5 py-6 sm:px-10 lg:h-dvh lg:min-h-0 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:overflow-hidden lg:px-10 lg:py-8'}`}
+            className={`relative text-foreground ${isEmbed ? 'min-h-0 bg-[#151515]' : 'grid min-h-screen grid-cols-1 gap-8 bg-background px-5 py-6 sm:px-10 lg:h-dvh lg:min-h-0 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[auto_1fr] lg:gap-x-10 lg:gap-y-6 lg:overflow-hidden lg:px-10 lg:py-8'}`}
         >
             {!isEmbed && (
                 <header className="flex justify-center lg:col-start-1 lg:row-start-1">
