@@ -1,4 +1,5 @@
 import { RotateCcw } from 'lucide-react';
+import { useEffect } from 'react';
 
 import { ChimoIndicator } from './features/components/ChimoIndicator';
 import { GameBoard } from './features/components/GameBoard';
@@ -9,6 +10,28 @@ import { generatePuzzle } from './features/domain/puzzle-generator';
 import { useGame } from './features/hooks/useGame';
 
 export default function App() {
+    useEffect(() => {
+        const targetOrigin = 'https://chimoboard.vercel.app';
+        const content = document.documentElement;
+
+        function reportHeight() {
+            window.parent.postMessage(
+                {
+                    type: 'chimoboard:resize',
+                    height: content.scrollHeight,
+                },
+                targetOrigin,
+            );
+        }
+
+        const observer = new ResizeObserver(reportHeight);
+        observer.observe(content);
+
+        reportHeight();
+
+        return () => observer.disconnect();
+    }, []);
+
     const { puzzle, state, revealCell, toggleMark, resetGame, replayGame } =
         useGame(generatePuzzle);
 
