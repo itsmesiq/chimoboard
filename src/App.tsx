@@ -10,7 +10,11 @@ import { generatePuzzle } from './features/domain/puzzle-generator';
 import { useGame } from './features/hooks/useGame';
 
 export default function App() {
+    const isEmbed = new URLSearchParams(window.location.search).get('mode') === 'embed';
+
     useEffect(() => {
+        if (!isEmbed) return;
+
         const targetOrigin = 'https://chimoboard.vercel.app';
         const content = document.documentElement;
 
@@ -30,12 +34,10 @@ export default function App() {
         reportHeight();
 
         return () => observer.disconnect();
-    }, []);
+    }, [isEmbed]);
 
     const { puzzle, state, revealCell, toggleMark, resetGame, replayGame } =
         useGame(generatePuzzle);
-
-    const isEmbed = new URLSearchParams(window.location.search).get('mode') === 'embed';
 
     const gameMessage =
         state.status === 'won'
