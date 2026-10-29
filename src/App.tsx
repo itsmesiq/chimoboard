@@ -13,9 +13,9 @@ export default function App() {
     const isEmbed = new URLSearchParams(window.location.search).get('mode') === 'embed';
 
     useEffect(() => {
-        if (!isEmbed) return;
+        if (!isEmbed || !document.referrer) return;
 
-        const targetOrigin = 'https://chimoboard.vercel.app';
+        const targetOrigin = new URL(document.referrer).origin;
         const content = document.documentElement;
 
         function reportHeight() {
